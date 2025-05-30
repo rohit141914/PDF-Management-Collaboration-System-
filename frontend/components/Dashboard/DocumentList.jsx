@@ -41,6 +41,17 @@ const DocumentList = ({ onShare, refresh }) => {
     }
   };
 
+  // New function to confirm deletion and handle errors
+  const confirmDeleteDocument = async (id) => {
+    if (window.confirm("Are you sure you want to delete this document?")) {
+      try {
+        await handleDelete(id);
+      } catch (error) {
+        alert("Error deleting document.");
+      }
+    }
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -87,7 +98,7 @@ const DocumentList = ({ onShare, refresh }) => {
             <IconButton
               edge="end"
               aria-label="delete"
-              onClick={() => handleDelete(document.id)}
+              onClick={() => confirmDeleteDocument(document.id)}
             >
               <Delete />
             </IconButton>

@@ -37,6 +37,7 @@ class Comment(models.Model):
     y_position = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+    marked_seen = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Comment by {self.author or self.guest_name} on page {self.page_number}"

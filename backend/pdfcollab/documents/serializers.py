@@ -25,14 +25,18 @@ class SharedAccessSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), required=False, allow_null=True)
-    
+    shared_access = serializers.SlugRelatedField(
+        queryset=SharedAccess.objects.all(),
+        slug_field='token',
+        required=False,          # now optional
+        allow_null=True          # allow null values
+    )
+
     class Meta:
         model = Comment
         fields = ['id', 'document', 'shared_access', 'author', 'guest_name', 'content', 
-                  'page_number', 'x_position', 'y_position', 'created_at', 'parent_comment']
-        read_only_fields = ['id', 'created_at']
+                  'page_number', 'x_position', 'y_position', 'created_at', 'parent_comment', 'marked_seen']
+        read_only_fields = ['id', 'created_at', 'document']
 
     def validate(self, data):
-        if not data.get('author') and not data.get('guest_name'):
-            raise serializers.ValidationError("Either author or guest_name must be provided.")
         return data

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Grid, Typography } from '@mui/material';
-import PDFViewer from '../components/PDFViewer/PDFViewer';
-import CommentSidebar from '../components/PDFViewer/CommentSidebar';
-import CommentForm from '../components/PDFViewer/CommentForm';
-import { getSharedDocument, getComments, createComment } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Box, Grid, Typography, CircularProgress } from "@mui/material";
+import PDFViewer from "../components/PDFViewer/PDFViewer";
+import CommentSidebar from "../components/PDFViewer/CommentSidebar";
+import CommentForm from "../components/PDFViewer/CommentForm";
+import { getSharedDocument, getComments, createComment, updataMarkedSeenStatus, deleteComment } from "../services/api";
 
 const SharedPDF = () => {
   const { token } = useParams();
@@ -20,7 +20,7 @@ const SharedPDF = () => {
         const response = await getSharedDocument(token);
         setPdfDoc(response.data);
       } catch (error) {
-        console.error('Error fetching shared document:', error);
+        console.error("Error fetching shared document:", error);
       }
     };
     fetchDocument();
@@ -29,10 +29,12 @@ const SharedPDF = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await getComments(pdfDoc?.id, { shared_access: token });
+        const response = await getComments(pdfDoc?.id, {
+          shared_access: token,
+        });
         setComments(response.data);
       } catch (error) {
-        console.error('Error fetching comments:', error);
+        console.error("Error fetching comments:", error);
       }
     };
     if (pdfDoc) fetchComments();
@@ -52,28 +54,65 @@ const SharedPDF = () => {
 
   const handleSubmitComment = async (commentData) => {
     try {
+      const tokenVal = token; // token is already a value
       const response = await createComment(pdfDoc.id, {
         ...commentData,
-        shared_access: token,
+        shared_access: tokenVal,
       });
       setComments([...comments, response.data]);
     } catch (error) {
-      console.error('Error creating comment:', error);
+      console.error("Error creating comment:", error);
     }
   };
+  const handleMarkSeen = async (commentId, newStatus) => {
+      try {
+        await updataMarkedSeenStatus(pdfDoc.id, commentId, newStatus);
+        setComments(
+          comments.map((c) =>
+            c.id === commentId ? { ...c, marked_seen: newStatus } : c
+          )
+        );
+      } catch (error) {
+        console.error("Error updating comment marked seen status:", error);
+      }
+    };
+  const handleDeleteComment = async (commentId) => {
+      try {
+        await deleteComment(pdfDoc.id, commentId);
+        setComments(comments.filter((comment) => comment.id !== commentId));
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+      }
+    };
 
   if (!pdfDoc) {
-    return <Typography>Loading shared document...</Typography>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <Grid container spacing={2} sx={{ height: 'calc(100vh - 64px)' }}>
+    <Grid container spacing={2}
+       sx={{
+        height: "calc(100vh - 64px)",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
       <Grid item xs={8}>
         <Box
           sx={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
             p: 2,
           }}
         >
@@ -83,34 +122,31 @@ const SharedPDF = () => {
           <Box
             sx={{
               flexGrow: 1,
-              overflow: 'auto',
-              position: 'relative',
-              border: '1px solid #ccc',
+              overflow: "auto",
+              position: "relative",
+              border: "1px solid #ccc",
             }}
             onClick={handleCanvasClick}
           >
-            <PDFViewer
-              fileUrl={pdfDoc.file}
-              onPageRender={handlePageRender}
-            />
+            <PDFViewer fileUrl={pdfDoc.file} onPageRender={handlePageRender} />
           </Box>
-          {commentPosition.x > 0 && commentPosition.y > 0 && (
-            <CommentForm
-              onSubmit={handleSubmitComment}
-              pageNumber={currentPage}
-              x={commentPosition.x}
-              y={commentPosition.y}
-              parentComment={replyingTo}
-              onCancel={() => setCommentPosition({ x: 0, y: 0 })}
-            />
-          )}
+          <CommentForm
+            onSubmit={handleSubmitComment}
+            pageNumber={currentPage}
+            x={commentPosition.x}
+            y={commentPosition.y}
+            parentComment={replyingTo}
+            onCancel={() => setCommentPosition({ x: 0, y: 0 })}
+          />
         </Box>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={4} sx={{ alignSelf: "flex-start", mt: "56px" }}>
         <CommentSidebar
           comments={comments}
           pageNumber={currentPage}
           onReply={setReplyingTo}
+          onDelete={handleDeleteComment}
+          onMarkSeen={handleMarkSeen}
         />
       </Grid>
     </Grid>

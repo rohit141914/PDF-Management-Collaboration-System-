@@ -1,14 +1,22 @@
-import React from 'react';
-import { List, ListItem, ListItemText, Typography, Paper, Divider } from '@mui/material';
-import { format } from 'date-fns';
+import React from "react";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Paper,
+  Divider,
+  Button,
+} from "@mui/material";
+import { format } from "date-fns";
 
-const CommentSidebar = ({ comments, pageNumber, onReply }) => {
+const CommentSidebar = ({ comments, pageNumber, onDelete, onMarkSeen }) => {
   const filteredComments = comments.filter(
     (comment) => comment.page_number === pageNumber
   );
 
   return (
-    <Paper elevation={3} sx={{ p: 2, height: '100%', overflow: 'auto' }}>
+    <Paper elevation={3} sx={{ p: 2, height: "100%", overflow: "auto" }}>
       <Typography variant="h6" gutterBottom>
         Comments (Page {pageNumber})
       </Typography>
@@ -17,31 +25,85 @@ const CommentSidebar = ({ comments, pageNumber, onReply }) => {
         <Typography>No comments yet</Typography>
       ) : (
         <List>
-          {filteredComments.map((comment) => (
-            <React.Fragment key={comment.id}>
-              <ListItem alignItems="flex-start">
-                <ListItemText
-                  primary={
-                    <>
-                      <Typography fontWeight="bold">
-                        {comment.author?.username || comment.guest_name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {format(new Date(comment.created_at), 'MMM d, yyyy h:mm a')}
-                      </Typography>
-                    </>
-                  }
-                  secondary={
-                    <>
-                      <Typography>{comment.content}</Typography>
-                      <button onClick={() => onReply(comment)}>Reply</button>
-                    </>
-                  }
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-            </React.Fragment>
-          ))}
+          {filteredComments.map((comment) => {
+            console.log(comment);
+            return (
+              <React.Fragment key={comment.id}>
+                <ListItem alignItems="flex-start">
+                  <ListItemText
+                    primary={
+                      <>
+                        {comment.guest_name && (
+                          <Typography component="div" fontWeight="bold">
+                            Guest Name = {comment.guest_name}
+                          </Typography>
+                        )}
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          {format(
+                            new Date(comment.created_at),
+                            "MMM d, yyyy h:mm a"
+                          )}
+                        </Typography>
+                      </>
+                    }
+                    secondary={
+                      <>
+                        <Typography
+                          sx={{
+                            display: "block",
+                            maxWidth: "400px",
+                            wordWrap: "break-word",
+                          }}
+                        >
+                          {comment.content}
+                        </Typography>
+                        <div>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              mt: 1,
+                              color: "white",
+                              backgroundColor: comment.marked_seen
+                                ? "green"
+                                : "#0768cf",
+                              "&:hover": { opacity: 0.8 },
+                            }}
+                            onClick={() =>
+                              onMarkSeen(comment.id, !comment.marked_seen)
+                            }
+                          >
+                            {comment.marked_seen
+                              ? "Marked as Seen"
+                              : "Mark as Seen"}
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              mt: 1,
+                              ml: 1,
+                              color: "white",
+                              backgroundColor: "crimson",
+                              "&:hover": { opacity: 0.8 },
+                            }}
+                            onClick={() => onDelete(comment.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" sx={{ ml: 0 }} />
+              </React.Fragment>
+            );
+          })}
         </List>
       )}
     </Paper>
