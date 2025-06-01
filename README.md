@@ -14,6 +14,7 @@ A full-stack web application for managing and collaborating on PDF documents. Th
 
 - Built with Django and Django REST Framework.
 - Provides API endpoints for document upload, sharing, deletion, and user management.
+- **Database:** PostgreSQL is used as the primary database.
 - Ensure you have Python 3.8+ installed.
 - Install dependencies from `requirements.txt`:
   ```bash
@@ -53,6 +54,9 @@ This project includes a Dockerfile to containerize the application. You can buil
    ```bash
    docker run -p 8000:8000 pdf-management-app
    ```
+
+For a pre-built image, you can pull the Docker Hub image:
+[PDF Management App Docker Image](https://hub.docker.com/repository/docker/sadf/abc)
 
 ### Docker Compose (Optional)
 
