@@ -56,7 +56,7 @@ This project includes a Dockerfile to containerize the application. You can buil
    ```
 
 For a pre-built image, you can pull the Docker Hub image:
-[PDF Management App Docker Image](https://hub.docker.com/repository/docker/sadf/abc)
+[PDF Management App Docker Image](https://hub.docker.com/repository/docker/rohitsde/pdfcollab-backend/general)
 
 ### Docker Compose (Optional)
 
