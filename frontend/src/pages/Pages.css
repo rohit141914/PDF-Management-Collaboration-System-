@@ -1,0 +1,138 @@
+/* Home page styles */
+.home-container {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.home-title {
+  margin-bottom: 24px;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.home-subtitle {
+  margin-bottom: 32px;
+  color: #666;
+}
+
+.home-buttons-container {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.home-get-started-button {
+  background-color: #1976d2;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.home-get-started-button:hover {
+  background-color: #1565c0;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.home-login-button {
+  border: 2px solid #1976d2;
+  color: #1976d2;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.home-login-button:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  transform: scale(1.05);
+}
+
+/* Dashboard page styles */
+.dashboard-page-container {
+  margin: 32px 0;
+}
+
+.dashboard-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+/* PDFView page styles */
+.pdf-view-loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.pdf-view-grid-container {
+  height: calc(100vh - 64px);
+  justify-content: center;
+  align-items: center;
+}
+
+.pdf-view-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.pdf-view-viewer-container {
+  flex-grow: 1;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #ccc;
+}
+
+.pdf-view-sidebar {
+  align-self: flex-start;
+  margin-top: 56px;
+}
+
+/* SharedPDF page styles */
+.shared-pdf-loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.shared-pdf-error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.shared-pdf-grid-container {
+  height: calc(100vh - 64px);
+  justify-content: center;
+  align-items: center;
+}
+
+.shared-pdf-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.shared-pdf-viewer-container {
+  flex-grow: 1;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #ccc;
+}
+
+.shared-pdf-sidebar {
+  align-self: flex-start;
+  margin-top: 56px;
+}

@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login, setAuthToken } from '../../services/auth';
-import { TextField, Button, Container, Typography, Box, Link } from '@mui/material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login, setAuthToken } from "../../services/auth";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
+import "./Auth.css";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -14,24 +22,20 @@ const Login = () => {
     try {
       const response = await login({ email, password });
       setAuthToken(response.data.access);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError("Invalid credentials. Please try again.");
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
+      <Box className="auth-container">
+        <Typography component="h1" variant="h5" className="auth-title">
           Sign in
         </Typography>
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        {error && <Typography className="auth-error">{error}</Typography>}
+        <Box component="form" onSubmit={handleSubmit} className="auth-form">
           <TextField
             margin="normal"
             required
@@ -60,12 +64,12 @@ const Login = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            className="auth-submit-button"
           >
             Sign In
           </Button>
-          <Link href="/register" variant="body2">
-            {"Don't have an account? Sign Up"}
+          <Link href="/register" variant="body2" className="auth-link">
+            Don't have an account? Sign Up
           </Link>
         </Box>
       </Box>

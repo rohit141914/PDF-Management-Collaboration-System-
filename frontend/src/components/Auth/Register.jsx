@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { register, login, setAuthToken } from '../../services/auth';
-import { TextField, Button, Container, Typography, Box, Link } from '@mui/material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { register, login, setAuthToken } from "../../services/auth";
+import { TextField, Button, Container, Typography, Box, Link,}
+from "@mui/material";
+import "./Auth.css";
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,24 +18,20 @@ const Register = () => {
       await register({ email, username, password });
       const response = await login({ email, password });
       setAuthToken(response.data.access);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
+      <Box className="auth-container">
+        <Typography component="h1" variant="h5" className="auth-title">
           Sign up
         </Typography>
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        {error && <Typography className="auth-error">{error}</Typography>}
+        <Box component="form" onSubmit={handleSubmit} className="auth-form">
           <TextField
             margin="normal"
             required
@@ -73,11 +71,11 @@ const Register = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            className="auth-submit-button"
           >
             Sign Up
           </Button>
-          <Link href="/login" variant="body2">
+          <Link href="/login" variant="body2" className="auth-link">
             Already have an account? Sign in
           </Link>
         </Box>

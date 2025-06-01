@@ -1,0 +1,36 @@
+.auth-container {
+  margin-top: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-title {
+  margin-bottom: 16px;
+}
+
+.auth-error {
+  margin-top: 16px;
+  color: #d32f2f;
+}
+
+.auth-form {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.auth-form div{
+  margin-top: 04px !important;
+  width: 100%;
+}
+
+.auth-submit-button {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.auth-link {
+  text-align: center;
+  display: block;
+  margin-top: 4px !important;
+}

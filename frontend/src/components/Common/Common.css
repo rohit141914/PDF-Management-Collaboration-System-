@@ -1,0 +1,34 @@
+/* AlertSnackbar styles */
+.alert-snackbar {
+  width: 100%;
+}
+
+/* ConfirmationDialog styles */
+.confirmation-dialog-actions {
+  margin-bottom: 12px;
+  margin-right: 12px;
+}
+
+.confirmation-dialog-cancel-button {
+  border: 1px solid #1487fa !important;
+}
+
+.confirmation-dialog-cancel-button:hover {
+  background-color: rgba(20, 135, 250, 0.1);
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.confirmation-dialog-confirm-button {
+  cursor: pointer;
+}
+
+.confirmation-dialog-confirm-button:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.confirmation-dialog-confirm-button.error:hover {
+  background-color: #c62828;
+  box-shadow: 0 4px 8px rgba(198, 40, 40, 0.3);
+}

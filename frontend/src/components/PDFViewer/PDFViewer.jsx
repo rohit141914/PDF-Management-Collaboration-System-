@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import "./PDFViewer.css";
 
 // Set worker path - using the version from the imported pdfjsLib
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js`;
@@ -12,6 +13,7 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef(null);
+  const renderTaskRef = useRef(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -26,19 +28,26 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
         setIsLoading(false);
       },
       (error) => {
-        console.error("PDF loading error:", error);
         setError("Failed to load PDF document");
         setIsLoading(false);
       }
     );
 
     return () => {
-      // Removed loadingTask.destroy() to prevent "Worker was destroyed" error
+      // Cancel any ongoing render task
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+      }
     };
   }, [fileUrl]);
 
   useEffect(() => {
     if (!pdf || !canvasRef.current) return;
+
+    // Cancel previous render task if it exists
+    if (renderTaskRef.current) {
+      renderTaskRef.current.cancel();
+    }
 
     pdf.getPage(currentPage).then(
       (page) => {
@@ -54,7 +63,10 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
           viewport: viewport,
         };
 
-        page.render(renderContext).promise.then(
+        // Store the render task
+        renderTaskRef.current = page.render(renderContext);
+
+        renderTaskRef.current.promise.then(
           () => {
             if (onPageRender) {
               onPageRender({
@@ -64,9 +76,13 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
                 scale,
               });
             }
+            renderTaskRef.current = null;
           },
           (renderError) => {
-            console.error("Page render error:", renderError);
+            if (renderError.name !== "RenderingCancelledException") {
+              console.error("Page render error:", renderError);
+            }
+            renderTaskRef.current = null;
           }
         );
       },
@@ -112,7 +128,7 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
   }
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <div className="pdf-viewer-container">
       <canvas ref={canvasRef} />
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Button
@@ -133,7 +149,7 @@ const PDFViewer = ({ fileUrl, onPageRender, scale = 1.5 }) => {
           Next
         </Button>
       </Box>
-    </Box>
+    </div>
   );
 };
 

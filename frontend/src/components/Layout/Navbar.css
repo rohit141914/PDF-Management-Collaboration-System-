@@ -1,0 +1,33 @@
+.navbar-container {
+  flex-grow: 1;
+}
+
+.navbar-title {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.navbar-logout-button {
+  color: white !important;
+  border: 1px solid white !important;
+  margin-left: 16px !important;
+  padding: 6px 16px !important;
+}
+
+.navbar-logout-button:hover {
+  background-color: rgba(30, 77, 144, 1);
+  border: 1px solid white;
+}
+
+.navbar-dashboard-button {
+    border: 1px solid white !important;
+    color: white !important;
+    margin-right: 8px !important;
+    padding: 6px 16px !important;
+
+}
+
+.navbar-dashboard-button:hover {
+    background-color: rgba(30, 77, 144, 1);
+    border: 1px solid white;
+}

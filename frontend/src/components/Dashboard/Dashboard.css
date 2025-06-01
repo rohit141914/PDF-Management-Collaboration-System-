@@ -1,0 +1,109 @@
+/* DocumentList styles */
+.document-card {
+  margin-bottom: 16px;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.document-card-content {
+  flex: 1;
+}
+
+/* ShareModal styles */
+.share-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.share-link-container {
+  display: flex;
+  align-items: center;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.share-link-text {
+  flex-grow: 1;
+  word-break: break-all;
+}
+
+/* .share-instruction-text {
+} */
+
+/* UploadModal styles */
+.upload-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.upload-cancel-button {
+  color: #1976d2;
+  border: 1px solid #1976d2;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.upload-cancel-button:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.upload-submit-button {
+  background-color: #1976d2;
+  color: white;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.upload-submit-button:hover {
+  background-color: #1565c0;
+  transform: scale(1.05);
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.upload-submit-button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.copied-success-text {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+/* Close button styles */
+.close-upload-button {
+  color: #1976d2 !important;
+  border: 1px solid #1976d2 !important;
+  padding: 4px 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  margin-bottom: 8px !important;
+  margin-right: 8px !important;
+}
+
+.close-upload-button:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  /* transform: scale(1.05); */
+  cursor: pointer;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Box, Grid, Typography, CircularProgress } from "@mui/material";
 import PDFViewer from "../components/PDFViewer/PDFViewer";
 import CommentSidebar from "../components/PDFViewer/CommentSidebar";
@@ -11,38 +11,64 @@ import {
   deleteComment,
   updataMarkedSeenStatus,
 } from "../services/api";
+import { isAuthenticated } from "../services/auth";
+import AlertSnackbar from "../components/Common/AlertSnackbar";
+import "./Pages.css";
 
 const PDFView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [pdfDoc, setPdfDoc] = useState(null);
   const [comments, setComments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [replyingTo, setReplyingTo] = useState(null);
   const [commentPosition, setCommentPosition] = useState({ x: 0, y: 0 });
+  const [alertInfo, setAlertInfo] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const showAlert = (message, severity = "info") => {
+    setAlertInfo({ open: true, message, severity });
+  };
+
+  const handleCloseAlert = () => {
+    setAlertInfo({ ...alertInfo, open: false });
+  };
+
+  const fetchDocument = async () => {
+    try {
+      const response = await getDocument(id);
+      setPdfDoc(response.data);
+    } catch (error) {
+      showAlert("Failed to load document. Please try again.", "error");
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const response = await getComments(id);
+      setComments(response.data);
+    } catch (error) {
+      showAlert("Failed to load comments. Please try again.", "error");
+    }
+  };
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      try {
-        const response = await getDocument(id);
-        setPdfDoc(response.data);
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      }
-    };
     fetchDocument();
   }, [id]);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await getComments(id);
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
     fetchComments();
   }, [id]);
+
+  // New authentication check
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+    }
+  }, []);
 
   const handlePageRender = (pageInfo) => {
     setCurrentPage(pageInfo.pageNumber);
@@ -60,8 +86,9 @@ const PDFView = () => {
     try {
       const response = await createComment(id, commentData);
       setComments([...comments, response.data]);
+      showAlert("Comment added successfully!", "success");
     } catch (error) {
-      console.error("Error creating comment:", error);
+      showAlert("Failed to add comment. Please try again.", "error");
     }
   };
 
@@ -69,8 +96,9 @@ const PDFView = () => {
     try {
       await deleteComment(pdfDoc.id, commentId);
       setComments(comments.filter((comment) => comment.id !== commentId));
+      showAlert("Comment deleted successfully!", "success");
     } catch (error) {
-      console.error("Error deleting comment:", error);
+      showAlert("Failed to delete comment. Please try again.", "error");
     }
   };
 
@@ -82,79 +110,64 @@ const PDFView = () => {
           c.id === commentId ? { ...c, marked_seen: newStatus } : c
         )
       );
+      showAlert("Comment status updated successfully!", "success");
     } catch (error) {
-      console.error("Error updating comment marked seen status:", error);
+      showAlert("Failed to update comment status. Please try again.", "error");
     }
   };
 
   if (!pdfDoc) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box className="pdf-view-loading-container">
         <CircularProgress />
       </Box>
     );
   }
-  console.log(pdfDoc);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        height: "calc(100vh - 64px)",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Grid item xs={8}>
-        <Box
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            p: 2,
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            {pdfDoc.title}
-          </Typography>
-          <Box
-            sx={{
-              flexGrow: 1,
-              overflow: "auto",
-              position: "relative",
-              border: "1px solid #ccc",
-            }}
-            onClick={handleCanvasClick}
-          >
-            <PDFViewer fileUrl={pdfDoc.file} onPageRender={handlePageRender} />
+    <>
+      <Grid container spacing={2} className="pdf-view-grid-container">
+        <Grid item xs={8}>
+          <Box className="pdf-view-content">
+            <Typography variant="h5" gutterBottom>
+              {pdfDoc.title}
+            </Typography>
+            <Box
+              className="pdf-view-viewer-container"
+              onClick={handleCanvasClick}
+            >
+              <PDFViewer
+                fileUrl={pdfDoc.file}
+                onPageRender={handlePageRender}
+              />
+            </Box>
+            <CommentForm
+              onSubmit={handleSubmitComment}
+              pageNumber={currentPage}
+              x={commentPosition.x}
+              y={commentPosition.y}
+              parentComment={replyingTo}
+              onCancel={() => setCommentPosition({ x: 0, y: 0 })}
+            />
           </Box>
-          <CommentForm
-            onSubmit={handleSubmitComment}
+        </Grid>
+        <Grid item xs={4} className="pdf-view-sidebar">
+          <CommentSidebar
+            comments={comments}
             pageNumber={currentPage}
-            x={commentPosition.x}
-            y={commentPosition.y}
-            parentComment={replyingTo}
-            onCancel={() => setCommentPosition({ x: 0, y: 0 })}
+            onDelete={handleDeleteComment}
+            onMarkSeen={handleMarkSeen}
           />
-        </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={4} sx={{ alignSelf: "flex-start", mt: "56px" }}>
-        <CommentSidebar
-          comments={comments}
-          pageNumber={currentPage}
-          onDelete={handleDeleteComment}
-          onMarkSeen={handleMarkSeen}
-        />
-      </Grid>
-    </Grid>
+
+      <AlertSnackbar
+        open={alertInfo.open}
+        onClose={handleCloseAlert}
+        message={alertInfo.message}
+        severity={alertInfo.severity}
+      />
+    </>
   );
 };
 

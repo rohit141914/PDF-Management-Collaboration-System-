@@ -1,46 +1,67 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout } from '../../services/auth';
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { logout, isAuthenticated as checkAuthenticated}
+from "../../services/auth";
+import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const authenticated = isAuthenticated();
+  const isAuthenticated = checkAuthenticated();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
+  };
+
+  const handleTitleClick = () => {
+    navigate("/");
+  };
+
+  const handleDashboard = () => {
+    navigate("/dashboard");
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            PDF Collab
-          </Link>
-        </Typography>
-        {authenticated ? (
-          <Box>
-            <Button color="inherit" component={Link} to="/dashboard">
-              Dashboard
-            </Button>
-            <Button color="inherit" onClick={handleLogout}>
+    <Box className="navbar-container">
+      <AppBar position="static">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            className="navbar-title"
+            onClick={handleTitleClick}
+          >
+            PDF Collaboration System
+          </Typography>
+          {isAuthenticated ? (
+            <Box>
+              <Button
+                color="inherit"
+                onClick={handleDashboard}
+                className="navbar-dashboard-button"
+              >
+                Dashboard
+              </Button>
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                className="navbar-logout-button"
+              >
+                Logout
+              </Button>
+            </Box>
+          ) : (
+            <Button
+              color="inherit"
+              onClick={handleLogout}
+              className="navbar-logout-button"
+            >
               Logout
             </Button>
-          </Box>
-        ) : (
-          <Box>
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
-            <Button color="inherit" component={Link} to="/register">
-              Register
-            </Button>
-          </Box>
-        )}
-      </Toolbar>
-    </AppBar>
+          )}
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 

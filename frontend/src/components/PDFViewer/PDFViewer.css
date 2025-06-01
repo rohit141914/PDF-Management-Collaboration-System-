@@ -1,0 +1,153 @@
+/* PDFViewer styles */
+.pdf-viewer-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  border: 1px solid #ddd;
+  position: relative;
+}
+
+.pdf-page {
+  margin: 0 auto;
+  display: block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+/* CommentForm styles */
+.comment-form-container {
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+.comment-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.comment-form-submit-button {
+  background-color: #1976d2 !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.comment-form-submit-button:hover {
+  background-color: #184f8d !important;
+  /* opacity: 0.7 !important; */
+  /* transform: scale(1.05) !important; */
+  cursor: pointer !important;
+}
+
+.comment-form-cancel-button {
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.comment-form-cancel-button:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  /* transform: scale(1.05); */
+  cursor: pointer;
+}
+
+/* CommentSidebar styles */
+.comment-sidebar-container {
+  padding: 16px;
+  height: 100%;
+  overflow: auto;
+  background-color: white;
+  border-left: 1px solid #ddd;
+}
+
+.comment-sidebar-header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.comment-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #1976d2;
+  border-right: 4px solid #1976d2;
+}
+
+.comment-content {
+  display: block;
+  max-width: 400px;
+  word-wrap: break-word;
+  margin-bottom: 8px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.comment-status-button {
+  margin-top: 8px !important;
+  color: white !important;
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.comment-status-button.done {
+  background-color: green;
+}
+
+.comment-status-button.in-progress {
+  background-color: #0768cf;
+}
+
+.comment-status-button:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.comment-delete-button {
+  margin-top: 8px !important;
+  margin-left: 8px !important;
+  color: white !important;
+  background-color: #d32f2f !important;
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.comment-delete-button:hover {
+  opacity: 0.8 !important;
+  cursor: pointer;
+}
+
+.guest-name {
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+.comment-timestamp {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.comment-divider {
+  margin-top: 12px !important;
+  margin-bottom: 16px !important;
+  margin-left: 0px !important;
+}

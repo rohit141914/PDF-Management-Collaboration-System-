@@ -4,7 +4,15 @@ import { Box, Grid, Typography, CircularProgress } from "@mui/material";
 import PDFViewer from "../components/PDFViewer/PDFViewer";
 import CommentSidebar from "../components/PDFViewer/CommentSidebar";
 import CommentForm from "../components/PDFViewer/CommentForm";
-import { getSharedDocument, getComments, createComment, updataMarkedSeenStatus, deleteComment } from "../services/api";
+import {
+  getSharedDocument,
+  getComments,
+  createComment,
+  updataMarkedSeenStatus,
+  deleteComment,
+} from "../services/api";
+import AlertSnackbar from "../components/Common/AlertSnackbar";
+import "./Pages.css";
 
 const SharedPDF = () => {
   const { token } = useParams();
@@ -13,30 +21,55 @@ const SharedPDF = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [replyingTo, setReplyingTo] = useState(null);
   const [commentPosition, setCommentPosition] = useState({ x: 0, y: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const showAlert = (message, severity = "info") => {
+    setAlertInfo({ open: true, message, severity });
+  };
+
+  const handleCloseAlert = () => {
+    setAlertInfo({ ...alertInfo, open: false });
+  };
+
+  const fetchDocument = async () => {
+    try {
+      setLoading(true);
+      setError(false);
+      const response = await getSharedDocument(token);
+      setPdfDoc(response.data);
+    } catch (error) {
+      setError(true);
+      showAlert(
+        "Failed to load shared document. Please check the link and try again.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const response = await getComments(pdfDoc?.id, {
+        shared_access: token,
+      });
+      setComments(response.data);
+    } catch (error) {
+      showAlert("Failed to load comments. Please try again.", "error");
+    }
+  };
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      try {
-        const response = await getSharedDocument(token);
-        setPdfDoc(response.data);
-      } catch (error) {
-        console.error("Error fetching shared document:", error);
-      }
-    };
     fetchDocument();
   }, [token]);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await getComments(pdfDoc?.id, {
-          shared_access: token,
-        });
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
     if (pdfDoc) fetchComments();
   }, [pdfDoc, token]);
 
@@ -54,102 +87,117 @@ const SharedPDF = () => {
 
   const handleSubmitComment = async (commentData) => {
     try {
-      const tokenVal = token; // token is already a value
+      const tokenVal = token;
       const response = await createComment(pdfDoc.id, {
         ...commentData,
         shared_access: tokenVal,
       });
       setComments([...comments, response.data]);
+      showAlert("Comment added successfully!", "success");
     } catch (error) {
-      console.error("Error creating comment:", error);
+      showAlert("Failed to add comment. Please try again.", "error");
     }
   };
   const handleMarkSeen = async (commentId, newStatus) => {
-      try {
-        await updataMarkedSeenStatus(pdfDoc.id, commentId, newStatus);
-        setComments(
-          comments.map((c) =>
-            c.id === commentId ? { ...c, marked_seen: newStatus } : c
-          )
-        );
-      } catch (error) {
-        console.error("Error updating comment marked seen status:", error);
-      }
-    };
+    try {
+      await updataMarkedSeenStatus(pdfDoc.id, commentId, newStatus);
+      setComments(
+        comments.map((c) =>
+          c.id === commentId ? { ...c, marked_seen: newStatus } : c
+        )
+      );
+      showAlert("Comment status updated successfully!", "success");
+    } catch (error) {
+      showAlert("Failed to update comment status. Please try again.", "error");
+    }
+  };
   const handleDeleteComment = async (commentId) => {
-      try {
-        await deleteComment(pdfDoc.id, commentId);
-        setComments(comments.filter((comment) => comment.id !== commentId));
-      } catch (error) {
-        console.error("Error deleting comment:", error);
-      }
-    };
+    try {
+      await deleteComment(pdfDoc.id, commentId);
+      setComments(comments.filter((comment) => comment.id !== commentId));
+      showAlert("Comment deleted successfully!", "success");
+    } catch (error) {
+      showAlert("Failed to delete comment. Please try again.", "error");
+    }
+  };
 
-  if (!pdfDoc) {
+  if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box className="shared-pdf-loading-container">
         <CircularProgress />
       </Box>
     );
   }
 
-  return (
-    <Grid container spacing={2}
-       sx={{
-        height: "calc(100vh - 64px)",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
-      <Grid item xs={8}>
-        <Box
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            p: 2,
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            {pdfDoc.title} (Shared)
+  if (error || !pdfDoc) {
+    return (
+      <>
+        <Box className="shared-pdf-error-container">
+          <Typography variant="h6" color="error" gutterBottom>
+            Failed to load document
           </Typography>
-          <Box
-            sx={{
-              flexGrow: 1,
-              overflow: "auto",
-              position: "relative",
-              border: "1px solid #ccc",
-            }}
-            onClick={handleCanvasClick}
-          >
-            <PDFViewer fileUrl={pdfDoc.file} onPageRender={handlePageRender} />
-          </Box>
-          <CommentForm
-            onSubmit={handleSubmitComment}
-            pageNumber={currentPage}
-            x={commentPosition.x}
-            y={commentPosition.y}
-            parentComment={replyingTo}
-            onCancel={() => setCommentPosition({ x: 0, y: 0 })}
-          />
+          <Typography variant="body2" color="text.secondary">
+            Please check the link and try again
+          </Typography>
         </Box>
-      </Grid>
-      <Grid item xs={4} sx={{ alignSelf: "flex-start", mt: "56px" }}>
-        <CommentSidebar
-          comments={comments}
-          pageNumber={currentPage}
-          onReply={setReplyingTo}
-          onDelete={handleDeleteComment}
-          onMarkSeen={handleMarkSeen}
+
+        <AlertSnackbar
+          open={alertInfo.open}
+          onClose={handleCloseAlert}
+          message={alertInfo.message}
+          severity={alertInfo.severity}
+          autoHideDuration={6000}
         />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Grid container spacing={2} className="shared-pdf-grid-container">
+        <Grid item xs={8}>
+          <Box className="shared-pdf-content">
+            <Typography variant="h5" gutterBottom>
+              {pdfDoc.title} (Shared)
+            </Typography>
+            <Box
+              className="shared-pdf-viewer-container"
+              onClick={handleCanvasClick}
+            >
+              <PDFViewer
+                fileUrl={pdfDoc.file}
+                onPageRender={handlePageRender}
+              />
+            </Box>
+            <CommentForm
+              onSubmit={handleSubmitComment}
+              pageNumber={currentPage}
+              x={commentPosition.x}
+              y={commentPosition.y}
+              parentComment={replyingTo}
+              onCancel={() => setCommentPosition({ x: 0, y: 0 })}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={4} className="shared-pdf-sidebar">
+          <CommentSidebar
+            comments={comments}
+            pageNumber={currentPage}
+            onReply={setReplyingTo}
+            onDelete={handleDeleteComment}
+            onMarkSeen={handleMarkSeen}
+          />
+        </Grid>
       </Grid>
-    </Grid>
+
+      <AlertSnackbar
+        open={alertInfo.open}
+        onClose={handleCloseAlert}
+        message={alertInfo.message}
+        severity={alertInfo.severity}
+        autoHideDuration={6000}
+      />
+    </>
   );
 };
 
