@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Box, Button, Typography } from "@mui/material";
+import { Container, Box, Button, Typography, TextField } from "@mui/material";
 import DocumentList from "../components/Dashboard/DocumentList";
 import UploadModal from "../components/Dashboard/UploadModal";
 import ShareModal from "../components/Dashboard/ShareModal";
@@ -16,6 +16,7 @@ const Dashboard = () => {
     message: "",
     severity: "info",
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const showAlert = (message, severity = "info") => {
     setAlertInfo({ open: true, message, severity });
@@ -47,14 +48,30 @@ const Dashboard = () => {
         <Box className="dashboard-page-container">
           <Box className="dashboard-page-header">
             <Typography variant="h4">My Documents</Typography>
+            <Box>
+
+            <TextField
+              placeholder="Search Documents"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              variant="outlined"
+              size="small"
+              style={{ marginLeft: "1rem" }}
+            />
             <Button
               variant="contained"
               onClick={() => setUploadModalOpen(true)}
+              style={{ marginLeft: "1rem" }}
             >
               Upload PDF
             </Button>
+            </Box>
           </Box>
-          <DocumentList onShare={handleShare} refresh={refreshList} />
+          <DocumentList
+            onShare={handleShare}
+            refresh={refreshList}
+            searchQuery={searchQuery}
+          />
         </Box>
         <UploadModal
           key={uploadModalOpen ? "open" : "closed"}

@@ -16,7 +16,7 @@ import ConfirmationDialog from "../Common/ConfirmationDialog";
 import AlertSnackbar from "../Common/AlertSnackbar";
 import "./Dashboard.css";
 
-const DocumentList = ({ onShare, refresh }) => {
+const DocumentList = ({ onShare, refresh, searchQuery }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -76,6 +76,25 @@ const DocumentList = ({ onShare, refresh }) => {
     setDocumentToDelete(null);
   };
 
+  // Filtering logic
+  const filteredDocuments = documents.filter((document) =>
+    document.title.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
+  const getHighlightedText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return parts.map((part, i) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={i} style={{ backgroundColor: "yellow" }}>
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
   if (loading) {
     return (
       <Box className="loading-container">
@@ -84,17 +103,19 @@ const DocumentList = ({ onShare, refresh }) => {
     );
   }
 
-  if (documents.length === 0) {
-    return <Typography>No documents found. Upload your first PDF!</Typography>;
+  if (filteredDocuments.length === 0) {
+    return <Typography>No matching documents found.</Typography>;
   }
 
   return (
     <>
       <Box>
-        {documents.map((document) => (
+        {filteredDocuments.map((document) => (
           <Card key={document.id} className="document-card">
             <CardContent className="document-card-content">
-              <Typography variant="h6">{document.title}</Typography>
+              <Typography variant="h6">
+                {getHighlightedText(document.title, searchQuery)}
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 Uploaded on {new Date(document.created_at).toLocaleDateString()}
               </Typography>
