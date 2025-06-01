@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = process.env.REACT_APP_BACKEND_API_BASE_URL+ "/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,10 +26,13 @@ api.interceptors.request.use(
 export const getDocuments = () => api.get("/documents/");
 export const deleteDocument = (id) => api.delete(`/documents/${id}/`);
 export const getSharedDocument = (token) => api.get(`/shared/${token}/`);
-export const getComments = (documentId) =>api.get(`/documents/${documentId}/comments/`);
-export const createComment = (documentId, commentData) =>api.post(`/documents/${documentId}/comments/`, commentData);
+export const getComments = (documentId) =>
+  api.get(`/documents/${documentId}/comments/`);
+export const createComment = (documentId, commentData) =>
+  api.post(`/documents/${documentId}/comments/`, commentData);
 export const getDocument = (id) => api.get(`/documents/${id}/`);
-export const deleteComment = (documentId, commentId) =>api.delete(`/documents/${documentId}/comments/${commentId}/`);
+export const deleteComment = (documentId, commentId) =>
+  api.delete(`/documents/${documentId}/comments/${commentId}/`);
 export const uploadDocument = (formData) =>
   api.post("/documents/", formData, {
     headers: {
@@ -41,7 +44,11 @@ export const shareDocument = (id, email) =>
     document_id: id,
     recipient_email: email,
   });
-export const updataMarkedSeenStatus = (documentId,commentId,marked_seen_status) =>
+export const updataMarkedSeenStatus = (
+  documentId,
+  commentId,
+  marked_seen_status
+) =>
   api.put(`/documents/${documentId}/comments/${commentId}/markseen/`, {
-    "marked_seen_status": marked_seen_status,
+    marked_seen_status: marked_seen_status,
   });
